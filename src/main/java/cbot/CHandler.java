@@ -2,7 +2,6 @@ package cbot;
 
 import arc.Core;
 import arc.files.Fi;
-import arc.func.Func;
 import arc.graphics.Color;
 import arc.graphics.Pixmap;
 import arc.graphics.Texture;
@@ -12,7 +11,6 @@ import arc.math.Mathf;
 import arc.struct.ObjectMap;
 import arc.struct.Seq;
 import arc.struct.StringMap;
-import arc.util.Tmp;
 import arc.util.io.CounterInputStream;
 import arc.util.serialization.Base64Coder;
 import mindustry.Vars;
@@ -23,8 +21,6 @@ import mindustry.core.Version;
 import mindustry.core.World;
 import mindustry.ctype.Content;
 import mindustry.ctype.ContentType;
-import mindustry.ctype.MappableContent;
-
 import mindustry.entities.units.BuildPlan;
 import mindustry.game.Schematic;
 import mindustry.game.Schematics;
@@ -38,7 +34,6 @@ import mindustry.world.Tile;
 import mindustry.world.WorldContext;
 import mindustry.world.blocks.environment.OreBlock;
 
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -46,7 +41,6 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.zip.InflaterInputStream;
 
 import static mindustry.Vars.content;

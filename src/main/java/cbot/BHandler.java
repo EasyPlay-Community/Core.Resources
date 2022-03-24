@@ -2,12 +2,14 @@ package cbot;
 
 import arc.files.Fi;
 import arc.util.io.Streams;
+import cbot.CHandler.Map;
 import mindustry.Vars;
 import mindustry.game.Schematic;
 import mindustry.game.Schematics;
 import mindustry.type.ItemStack;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Emote;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 
@@ -16,8 +18,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.List;
-import cbot.CHandler.Map;
+import java.util.HashMap;
 import java.util.UUID;
 
 public class BHandler {
@@ -46,6 +47,21 @@ public class BHandler {
         if(msg.getAttachments().get(0).getFileName().endsWith(".zip")){mod(msg,a);}
         if(msg.getAttachments().get(0).getFileName().endsWith(".msav")){karta(msg,a);}
     }
+
+    public static HashMap<String,Long> emotes1 = new HashMap<>() {{
+        put("titanium",956605748371128331L);
+        put("copper",956605934157844510L);
+        put("surgealloy",956605774585536543L);
+        put("lead",956605863680966726L);
+        put("plastanium",956605808911712286L);
+        put("graphite",956605919964307496L);
+        put("phasefabric",956605819875651634L);
+        put("thorium",956605764871528468L);
+        put("metaglass",956605837470732289L);
+        put("silicon",956605785746571295L);
+        put("ohno",956609243606302780L);
+    }};
+
     public static void schema(Message msg, Message.Attachment a){
         CHandler f=new CHandler();
         try {
@@ -61,11 +77,10 @@ public class BHandler {
                     .setAuthor(msg.getAuthor().getName(), msg.getAuthor().getAvatarUrl(), msg.getAuthor().getAvatarUrl()).setTitle(schem.name());
 
             StringBuilder field = new StringBuilder();
-           System.out.print(255);
+            System.out.print(255);
             for(ItemStack stack : schem.requirements()){
-                List<Emote> emotes = msg.getGuild().getEmotesByName(stack.item.name.replace("-", ""), true);
-                Emote result = emotes.isEmpty() ? msg.getGuild().getEmotesByName("ohno", true).get(0) : emotes.get(0);
-
+                Emote emote = Bot.jda.getEmoteById(emotes1.get(stack.item.name.replace("-", "").toLowerCase()));
+                Emote result = emote==null ? Bot.jda.getEmoteById(emotes1.get("ohno")) : emote;
                 field.append(result.getAsMention()).append(stack.amount).append("  ");
             }
 
