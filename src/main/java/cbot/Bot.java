@@ -36,9 +36,6 @@ public class Bot extends ListenerAdapter {
         if (message.getChannel().getIdLong() != 659588640636403713L) {
             return;
         }
-        if (message.getAuthor().getIdLong() == 417610494895980545L) {
-            return;
-        }
         System.out.println("Catch message");
         BHandler.handleMsg(message);
     }
