@@ -12,7 +12,6 @@ import arc.struct.ObjectMap;
 import arc.struct.Seq;
 import arc.struct.StringMap;
 import arc.util.io.CounterInputStream;
-import arc.util.serialization.Base64Coder;
 import mindustry.Vars;
 import mindustry.content.Blocks;
 import mindustry.core.ContentLoader;
@@ -47,22 +46,19 @@ import static mindustry.Vars.content;
 import static mindustry.Vars.world;
 
 public class CHandler {
-    public static final byte[] mapHeader = {77, 83, 65, 86};
-    public static final String schemHeader = "bXNjaAB";
-
     Graphics2D currentGraphics;
-    Color co=new Color();
+    Color co = new Color();
     BufferedImage currentImage;
 
-    public CHandler(){
+    public CHandler() {
         Version.enabled = false;
         Vars.content = new ContentLoader();
         Vars.content.createBaseContent();
-        for(ContentType type : ContentType.values()){
-            for(Content content : Vars.content.getBy(type)){
-                try{
+        for (ContentType type : ContentType.values()) {
+            for (Content content : Vars.content.getBy(type)) {
+                try {
                     content.init();
-                }catch(Throwable ignored){
+                } catch (Throwable ignored) {
                 }
             }
         }
@@ -77,17 +73,17 @@ public class CHandler {
         ObjectMap<String, BufferedImage> regions = new ObjectMap<>();
 
         data.getPages().each(page -> {
-            try{
+            try {
                 BufferedImage image = ImageIO.read(page.textureFile.file());
                 images.put(page, image);
                 page.texture = Texture.createEmpty(new ImageData(image));
-            }catch(Exception e){
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         });
 
         data.getRegions().each(reg -> {
-            try{
+            try {
                 BufferedImage image = new BufferedImage(reg.width, reg.height, BufferedImage.TYPE_INT_ARGB);
                 Graphics2D graphics = image.createGraphics();
 
@@ -96,7 +92,7 @@ public class CHandler {
                 ImageRegion region = new ImageRegion(reg.name, reg.page.texture, reg.left, reg.top, image);
                 Core.atlas.addRegion(region.name, region);
                 regions.put(region.name, image);
-            }catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });
@@ -104,9 +100,9 @@ public class CHandler {
         Lines.useLegacyLine = true;
         Core.atlas.setErrorRegion("error");
         Draw.scl = 1f / 4f;
-        Core.batch = new SpriteBatch(0){
+        Core.batch = new SpriteBatch(0) {
             @Override
-            protected void draw(TextureRegion region, float x, float y, float originX, float originY, float width, float height, float rotation){
+            protected void draw(TextureRegion region, float x, float y, float originX, float originY, float width, float height, float rotation) {
                 x += 4;
                 y += 4;
 
@@ -115,61 +111,73 @@ public class CHandler {
                 width *= 4;
                 height *= 4;
 
-                y = currentImage.getHeight() - (y + height/2f) - height/2f;
+                y = currentImage.getHeight() - (y + height / 2f) - height / 2f;
 
                 AffineTransform at = new AffineTransform();
                 at.translate(x, y);
                 at.rotate(-rotation * Mathf.degRad, originX * 4, originY * 4);
 
                 currentGraphics.setTransform(at);
-                BufferedImage image = regions.get(((TextureAtlas.AtlasRegion)region).name);
-                if(!color.equals(Color.white)){
+                BufferedImage image = regions.get(((TextureAtlas.AtlasRegion) region).name);
+                if (!color.equals(Color.white)) {
                     image = tint(image, color);
                 }
 
-                currentGraphics.drawImage(image, 0, 0, (int)width, (int)height, null);
+                currentGraphics.drawImage(image, 0, 0, (int) width, (int) height, null);
             }
 
             @Override
-            protected void draw(Texture texture, float[] spriteVertices, int offset, int count){
+            protected void draw(Texture texture, float[] spriteVertices, int offset, int count) {
                 //do nothing
             }
         };
 
-        for(ContentType type : ContentType.values()){
-            for(Content content : Vars.content.getBy(type)){
-                try{
+        for (ContentType type : ContentType.values()) {
+            for (Content content : Vars.content.getBy(type)) {
+                try {
                     content.load();
-                }catch(Throwable ignored){
+                } catch (Throwable ignored) {
                 }
             }
         }
 
-        try{
+        try {
             BufferedImage image = ImageIO.read(new File("bot/sprites/block_colors.png"));
 
-            for(Block block : Vars.content.blocks()){
+            for (Block block : Vars.content.blocks()) {
                 block.mapColor.argb8888(image.getRGB(block.id, 0));
-                if(block instanceof OreBlock){
-                    block.mapColor.set(((OreBlock)block).itemDrop.color);
+                if (block instanceof OreBlock) {
+                    block.mapColor.set(((OreBlock) block).itemDrop.color);
                 }
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
-        world = new World(){
-            public Tile tile(int x, int y){
+        world = new World() {
+            public Tile tile(int x, int y) {
                 return new Tile(x, y);
             }
         };
     }
 
-    private BufferedImage tint(BufferedImage image, Color color){
+    public static InputStream download(String url) {
+        try {
+            System.out.print("***");
+            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36");
+            System.out.println("#");
+            return connection.getInputStream();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private BufferedImage tint(BufferedImage image, Color color) {
         BufferedImage copy = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
         Color tmp = new Color();
-        for(int x = 0; x < copy.getWidth(); x++){
-            for(int y = 0; y < copy.getHeight(); y++){
+        for (int x = 0; x < copy.getWidth(); x++) {
+            for (int y = 0; y < copy.getHeight(); y++) {
                 int argb = image.getRGB(x, y);
                 tmp.argb8888(argb);
                 tmp.mul(color);
@@ -179,15 +187,11 @@ public class CHandler {
         return copy;
     }
 
-    public Schematic parseSchematic(String text) throws Exception{
-        return Schematics.read(new ByteArrayInputStream(Base64Coder.decode(text)));
-    }
-
-    public Schematic parseSchematicURL(String text) throws Exception{
+    public Schematic parseSchematicURL(String text) throws Exception {
         return Schematics.read(download(text));
     }
 
-    public BufferedImage previewSchematic(Schematic schem) throws Exception{
+    public BufferedImage previewSchematic(Schematic schem) throws Exception {
         BufferedImage image = new BufferedImage(schem.width * 32, schem.height * 32, BufferedImage.TYPE_INT_ARGB);
 
         Seq<BuildPlan> requests = schem.tiles.map(t -> new BuildPlan(t.x, t.y, t.rotation, t.block, t.config));
@@ -196,18 +200,18 @@ public class CHandler {
         requests.each(req -> {
             req.animScale = 1f;
             req.worldContext = false;
-            req.block.drawRequestRegion(req, requests::each);
+            req.block.drawRequestRegion(req, requests);
             Draw.reset();
         });
 
-        requests.each(req -> req.block.drawRequestConfigTop(req, requests::each));
+        requests.each(req -> req.block.drawRequestConfigTop(req, requests));
         ImageIO.write(image, "png", new File("out.png"));
 
         return image;
     }
 
-    public Map readMap(InputStream is) throws IOException{
-        try(InputStream ifs = new InflaterInputStream(is); CounterInputStream counter = new CounterInputStream(ifs); DataInputStream stream = new DataInputStream(counter)){
+    public Map readMap(InputStream is) throws IOException {
+        try (InputStream ifs = new InflaterInputStream(is); CounterInputStream counter = new CounterInputStream(ifs); DataInputStream stream = new DataInputStream(counter)) {
             Map out = new Map();
 
             SaveIO.readHeader(stream);
@@ -230,13 +234,13 @@ public class CHandler {
             var fgraphics = floors.createGraphics();
             var jcolor = new java.awt.Color(0, 0, 0, 64);
             int black = 255;
-            CachedTile tile = new CachedTile(){
+            CachedTile tile = new CachedTile() {
                 @Override
-                public void setBlock(Block type){
+                public void setBlock(Block type) {
                     super.setBlock(type);
 
                     int c = MapIO.colorFor(block(), Blocks.air, Blocks.air, team());
-                    if(c != black && c != 0){
+                    if (c != black && c != 0) {
                         walls.setRGB(x, floors.getHeight() - 1 - y, conv(c));
                         fgraphics.setColor(jcolor);
                         fgraphics.drawRect(x, floors.getHeight() - 1 - y + 1, 1, 1);
@@ -245,26 +249,36 @@ public class CHandler {
             };
 
             ver.region("content", stream, counter, ver::readContentHeader);
-            ver.region("preview_map", stream, counter, in -> ver.readMap(in, new WorldContext(){
-                @Override public void resize(int width, int height){}
-                @Override public boolean isGenerating(){return false;}
-                @Override public void begin(){
+            ver.region("preview_map", stream, counter, in -> ver.readMap(in, new WorldContext() {
+                @Override
+                public void resize(int width, int height) {
+                }
+
+                @Override
+                public boolean isGenerating() {
+                    return false;
+                }
+
+                @Override
+                public void begin() {
                     world.setGenerating(true);
                 }
-                @Override public void end(){
+
+                @Override
+                public void end() {
                     world.setGenerating(false);
                 }
 
                 @Override
-                public void onReadBuilding(){
+                public void onReadBuilding() {
                     //read team colors
-                    if(tile.build != null){
+                    if (tile.build != null) {
                         int c = tile.build.team.color.argb8888();
                         int size = tile.block().size;
                         int offsetx = -(size - 1) / 2;
                         int offsety = -(size - 1) / 2;
-                        for(int dx = 0; dx < size; dx++){
-                            for(int dy = 0; dy < size; dy++){
+                        for (int dx = 0; dx < size; dx++) {
+                            for (int dy = 0; dy < size; dy++) {
                                 int drawx = tile.x + dx + offsetx, drawy = tile.y + dy + offsety;
                                 walls.setRGB(drawx, floors.getHeight() - 1 - drawy, c);
                             }
@@ -273,17 +287,17 @@ public class CHandler {
                 }
 
                 @Override
-                public Tile tile(int index){
-                    tile.x = (short)(index % width);
-                    tile.y = (short)(index / width);
+                public Tile tile(int index) {
+                    tile.x = (short) (index % width);
+                    tile.y = (short) (index / width);
                     return tile;
                 }
 
                 @Override
-                public Tile create(int x, int y, int floorID, int overlayID, int wallID){
-                    if(overlayID != 0){
+                public Tile create(int x, int y, int floorID, int overlayID, int wallID) {
+                    if (overlayID != 0) {
                         floors.setRGB(x, floors.getHeight() - 1 - y, conv(MapIO.colorFor(Blocks.air, Blocks.air, content.block(overlayID), Team.derelict)));
-                    }else{
+                    } else {
                         floors.setRGB(x, floors.getHeight() - 1 - y, conv(MapIO.colorFor(Blocks.air, content.block(floorID), Blocks.air, Team.derelict)));
                     }
                     return tile;
@@ -297,81 +311,81 @@ public class CHandler {
 
             return out;
 
-        }finally{
+        } finally {
             content.setTemporaryMapper(null);
         }
     }
 
-    int conv(int rgba){
+    int conv(int rgba) {
         return co.set(rgba).argb8888();
     }
 
-    public static class Map{
+    public static class Map {
         public String name, author, description;
         public ObjectMap<String, String> tags = new ObjectMap<>();
         public BufferedImage image;
     }
 
-    static class ImageData implements TextureData{
+    static class ImageData implements TextureData {
         final BufferedImage image;
 
-        public ImageData(BufferedImage image){
+        public ImageData(BufferedImage image) {
             this.image = image;
         }
 
         @Override
-        public TextureDataType getType(){
+        public TextureDataType getType() {
             return TextureDataType.custom;
         }
 
         @Override
-        public boolean isPrepared(){
+        public boolean isPrepared() {
             return false;
         }
 
         @Override
-        public void prepare(){
+        public void prepare() {
 
         }
 
         @Override
-        public Pixmap consumePixmap(){
+        public Pixmap consumePixmap() {
             return null;
         }
 
         @Override
-        public boolean disposePixmap(){
+        public boolean disposePixmap() {
             return false;
         }
 
         @Override
-        public void consumeCustomData(int target){
+        public void consumeCustomData(int target) {
 
         }
 
         @Override
-        public int getWidth(){
+        public int getWidth() {
             return image.getWidth();
         }
 
         @Override
-        public int getHeight(){
+        public int getHeight() {
             return image.getHeight();
         }
 
         @Override
-        public Pixmap.Format getFormat(){
+        public Pixmap.Format getFormat() {
             return
                     Pixmap.Format.rgba8888;
         }
 
         @Override
-        public boolean useMipMaps(){
+        public boolean useMipMaps() {
             return false;
         }
 
         @Override
-        public boolean isManaged(){
+        public boolean isManaged() {
             return false;
         }
     }
@@ -380,24 +394,12 @@ public class CHandler {
         final BufferedImage image;
         final int x, y;
 
-        public ImageRegion(String name, Texture texture, int x, int y, BufferedImage image){
+        public ImageRegion(String name, Texture texture, int x, int y, BufferedImage image) {
             super(texture, x, y, image.getWidth(), image.getHeight());
             this.name = name;
             this.image = image;
             this.x = x;
             this.y = y;
-        }
-    }
-    public static InputStream download(String url){
-        try{
-            System.out.print("***");
-            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36");
-            InputStream strm=connection.getInputStream();
-            System.out.println("#");
-            return connection.getInputStream();
-        }catch(Exception e){
-            throw new RuntimeException(e);
         }
     }
 }
