@@ -1,14 +1,17 @@
 package cbot;
 
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity.ActivityType;
+import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import javax.security.auth.login.LoginException;
+import java.awt.*;
 
 public class Bot extends ListenerAdapter {
 
@@ -16,13 +19,9 @@ public class Bot extends ListenerAdapter {
 
     public static void main(String[] args) throws LoginException {
         JDABuilder builder = JDABuilder.createDefault(args[0]);
-        System.out.println("token");
         builder.setActivity(EntityBuilder.createActivity("+помощь", null, ActivityType.DEFAULT));
-        System.out.println("activity");
         builder.addEventListeners(new Bot());
-        System.out.println("listener");
         jda = builder.build();
-        System.out.println("runned");
     }
 
 
@@ -38,6 +37,16 @@ public class Bot extends ListenerAdapter {
         }
         System.out.println("Catch message");
         BHandler.handleMsg(message);
+    }
+
+    @Override
+    public void onReady(ReadyEvent event)
+    {
+        TextChannel channel = jda.getTextChannelById(917794148990459925L);
+        EmbedBuilder builder = new EmbedBuilder()
+                .setTitle("Core.Resources запущен!")
+                .setColor(Color.green);
+        channel.sendMessage(builder.build()).queue();;
     }
 
 
