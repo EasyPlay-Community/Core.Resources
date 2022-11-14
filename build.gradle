@@ -1,38 +1,37 @@
 plugins {
-    id 'java'
+    id  "java"
 }
+
 repositories {
-    jcenter()
-    mavenLocal()
     mavenCentral()
-    maven{ url "https://oss.sonatype.org/content/repositories/snapshots/" }
-    maven{ url "https://oss.sonatype.org/content/repositories/releases/" }
-    maven{ url 'https://jitpack.io' }
-    maven{ url "https://maven.atlassian.com/3rdparty/" }
-}
-ext{
-    mindustryVersion = 'v126.1'
+    maven{url "https://jitpack.io"}
 }
 
-
+ext {
+    mindustryVersion = 140.4
+}
 dependencies {
-    compile ('net.dv8tion:JDA:4.2.0_207') { exclude module: 'opus-java' }
-    compile "org.jsoup:jsoup:1.7.2"
-    compile "com.github.Anuken.Arc:arc-core:$mindustryVersion"
-    compile "com.github.Anuken.Mindustry:core:$mindustryVersion"
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.1'
-    //implementation 'org.javacord:javacord:3.0.5'
-    compile group: 'org.json', name: 'json', version: '20190722'
-    // https://mvnrepository.com/artifact/gnu.trove/trove4j
-    //compile group: 'gnu.trove', name: 'trove4j', version: 'idea-7.0.2'
-    // https://mvnrepository.com/artifact/net.sf.trove4j/trove4j
-    compile group: 'net.sf.trove4j', name: 'trove4j', version: '3.0.3'
+    implementation("net.dv8tion:JDA:5.0.0-alpha.22")
+    implementation 'org.slf4j:slf4j-api:2.0.3'
+    implementation 'org.slf4j:slf4j-nop:2.0.3'
+
+    implementation 'net.sf.trove4j:trove4j:3.0.3'
+
+    //implementation 'org.apache.logging.log4j:log4j-core:2.19.0'
+    //implementation("org.apache.logging.log4j:log4j-slf4j-impl:2.19.0")
+
+
+    compileOnly("com.github.Anuken.Arc:arc-core:v$mindustryVersion")
+    compileOnly("com.github.Anuken.Mindustry:core:v$mindustryVersion")
+
 }
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF8'
 }
 task dist (type: Jar) {
-    manifest{ attributes 'Main-Class': "cbot.Bot" }
+    manifest{ attributes 'Main-Class': "Core.Resources.Main" }
     from{ configurations.compileClasspath.collect{ it.isDirectory() ? it : it.name.endsWith("pom") ? it : zipTree(it)}}
     from files(sourceSets.main.output)
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
+
