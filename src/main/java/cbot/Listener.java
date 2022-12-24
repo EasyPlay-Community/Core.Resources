@@ -1,33 +1,25 @@
-package Core.Resources;
+package cbot;
 
-import Core.Resources.components.ContentHandler;
 import arc.func.Cons;
 import arc.graphics.Color;
 import arc.util.Log;
 import arc.util.UnsafeRunnable;
-
+import cbot.components.ContentHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Invite;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
-
 import java.io.File;
-import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
-import static Core.Resources.Vars.config;
-import static Core.Resources.Vars.handler;
 import static arc.graphics.Color.scarlet;
 import static arc.util.Strings.format;
 import static arc.util.Strings.getSimpleMessage;
+import static cbot.Vars.cache;
+import static cbot.Vars.config;
 import static mindustry.graphics.Pal.accent;
-import static mindustry.world.meta.BlockFlag.reactor;
 import static net.dv8tion.jda.api.utils.AttachedFile.fromData;
 
 
@@ -36,10 +28,10 @@ public class Listener extends ListenerAdapter {
     public static void loadCommands(String prefix) {
         Vars.handler.setPrefix(prefix);
 
-        Vars.handler.<Message>register("help", "РЎРїРёСЃРѕРє РІСЃРµС… РєРѕРјР°РЅРґ.", (args, message) -> {
+        Vars.handler.<Message>register("help", "Список всех команд.", (args, message) -> {
             var builder = new StringBuilder();
             Vars.handler.getCommandList().each(command -> builder.append(prefix).append("**").append(command.text).append("**").append(command.paramText).append(" - ").append(command.description).append("\n"));
-            reply(message, ":newspaper: РЎРїРёСЃРѕРє РІСЃРµС… РєРѕРјР°РЅРґ:", builder.toString(), accent);
+            reply(message, ":newspaper: Список всех команд:", builder.toString(), accent);
         });
     }
 
@@ -74,12 +66,12 @@ public class Listener extends ListenerAdapter {
                         .setColor(accent.argb8888())
                         .setImage("attachment://image.png");
 
-                var channel = Vars.jda.getTextChannelById(Vars.config.mapsChannelId);
+                var channel = Vars.jda.getTextChannelById(config.mapsChannelId);
 
-                channel.sendMessageEmbeds(embed.build()).addFiles(fromData(image, "image.png"), fromData(attachment.getProxy().download().get(), attachment.getFileName())).queue(queue -> reply(message, ":map: РЈСЃРїРµС€РЅРѕ", "РљР°СЂС‚Р° РѕС‚РїСЂР°РІР»РµРЅР° РІ " + channel.getAsMention(), accent));
+                channel.sendMessageEmbeds(embed.build()).addFiles(fromData(image, "image.png"), fromData(attachment.getProxy().download().get(), attachment.getFileName())).queue(queue -> reply(message, ":map: Успешно", "Карта отправлена в " + channel.getAsMention(), accent));
             }, t -> {
                 t.printStackTrace();
-                reply(message, ":warning: РћС€РёР±РєР°", getSimpleMessage(t), scarlet);
+                reply(message, ":warning: Ошибка", getSimpleMessage(t), scarlet);
             }));
         });
     }
@@ -106,10 +98,10 @@ public class Listener extends ListenerAdapter {
 
             var channel = Vars.jda.getTextChannelById(Vars.config.schematicsChannelId);
 
-            channel.sendMessageEmbeds(embed.build()).addFiles(fromData(image, "image.png"), fromData(attachment.getProxy().download().get(), attachment.getFileName())).queue(queue -> reply(message, ":wrench: РЈСЃРїРµС€РЅРѕ", "РЎС…РµРјР° РѕС‚РїСЂР°РІР»РµРЅР° РІ " + channel.getAsMention(), accent));
+            channel.sendMessageEmbeds(embed.build()).addFiles(fromData(image, "image.png"), fromData(attachment.getProxy().download().get(), attachment.getFileName())).queue(queue -> reply(message, ":wrench: Успешно", "Схема отправлена в " + channel.getAsMention(), accent));
         }, t -> {
             t.printStackTrace();
-            reply(message, ":warning: РћС€РёР±РєР°", getSimpleMessage(t), scarlet);
+            reply(message, ":warning: Ошибка", getSimpleMessage(t), scarlet);
         }));
 
     }
@@ -118,7 +110,7 @@ public class Listener extends ListenerAdapter {
         Log.info(attachment.getFileName());
         attachment.getProxy().downloadToFile(Vars.cache.child(attachment.getFileName()).file()).thenAccept(file -> tryWorkWithFile(file, () -> {
             String footer = message.getContentRaw().substring(5);
-            var channel = Vars.jda.getTextChannelById(Vars.config.modsChannelId);
+            var channel = Vars.jda.getTextChannelById(config.modsChannelId);
 
 
             var embed = new EmbedBuilder()
@@ -127,11 +119,11 @@ public class Listener extends ListenerAdapter {
                     .setFooter(footer)
                     .setColor(java.awt.Color.decode("#00FF00"))
                     .setImage("attachment://image.png");
-            channel.sendMessageEmbeds(embed.build()).addFiles(fromData(attachment.getProxy().download().get(), attachment.getFileName())).queue(queue -> reply(message, ":wrench: РЈСЃРїРµС€РЅРѕ", "РњРѕРґ РѕС‚РїСЂР°РІР»РµРЅ РІ " + channel.getAsMention(), accent));
+            channel.sendMessageEmbeds(embed.build()).addFiles(fromData(attachment.getProxy().download().get(), attachment.getFileName())).queue(queue -> reply(message, ":wrench: Успешно", "Мод отправлен в " + channel.getAsMention(), accent));
 
         }, t -> {
             t.printStackTrace();
-            reply(message, ":warning: РћС€РёР±РєР°", getSimpleMessage(t), scarlet);
+            reply(message, ":warning: Ошибка", getSimpleMessage(t), scarlet);
         }));
 
     }
@@ -139,7 +131,7 @@ public class Listener extends ListenerAdapter {
     public static void artParser(Message message, Message.Attachment attachment) {
         Log.info(attachment.getFileName());
         attachment.getProxy().downloadToFile(Vars.cache.child(attachment.getFileName()).file()).thenAccept(file -> tryWorkWithFile(file, () -> {
-            var channel = Vars.jda.getTextChannelById(Vars.config.artsChannelId);
+            var channel = Vars.jda.getTextChannelById(config.artsChannelId);
 
             attachment.getHeight();
             var embed = new EmbedBuilder()
@@ -148,11 +140,11 @@ public class Listener extends ListenerAdapter {
                     .setColor(java.awt.Color.decode("#00FF00"))
                     .setFooter(attachment.getWidth() + "x" + attachment.getHeight() + ", " + attachment.getSize() + "B")
                     .setImage("attachment://image.png");
-            channel.sendMessageEmbeds(embed.build()).addFiles(fromData(attachment.getProxy().download().get(), attachment.getFileName())).queue(queue -> reply(message, ":wrench: РЈСЃРїРµС€РЅРѕ", "РђСЂС‚ РѕС‚РїСЂР°РІР»РµРЅ РІ " + channel.getAsMention(), accent));
+            channel.sendMessageEmbeds(embed.build()).addFiles(fromData(attachment.getProxy().download().get(), attachment.getFileName())).queue(queue -> reply(message, ":wrench: Успешно", "Арт отправлен в " + channel.getAsMention(), accent));
 
         }, t ->  {
             t.printStackTrace();
-            reply(message, ":warning: РћС€РёР±РєР°", getSimpleMessage(t), scarlet);
+            reply(message, ":warning: Ошибка", getSimpleMessage(t), scarlet);
         }));
 
 
@@ -185,11 +177,13 @@ public class Listener extends ListenerAdapter {
             });
             try {
                 Thread.sleep(500);
+
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
-
+        cache.delete();
+        cache.mkdirs();
 
     }
 }

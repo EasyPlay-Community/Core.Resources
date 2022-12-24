@@ -1,12 +1,12 @@
-package Core.Resources.components;
+package cbot.components;
 
-import Core.Resources.Vars;
 import arc.graphics.Texture;
 import arc.graphics.g2d.SpriteBatch;
 import arc.graphics.g2d.TextureAtlas.AtlasRegion;
 import arc.graphics.g2d.TextureRegion;
 import arc.math.Mathf;
 import arc.util.Tmp;
+import cbot.Vars;
 
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;

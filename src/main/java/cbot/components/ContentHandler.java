@@ -1,11 +1,11 @@
-package Core.Resources.components;
+package cbot.components;
 
-import Core.Resources.Vars;
 import arc.files.Fi;
 import arc.graphics.Pixmap;
 import arc.graphics.PixmapIO.PngWriter;
 import arc.graphics.g2d.Draw;
 import arc.util.io.Streams.OptimizedByteArrayOutputStream;
+import cbot.Vars;
 import mindustry.entities.units.BuildPlan;
 import mindustry.game.Schematic;
 import mindustry.game.Schematics;
@@ -15,7 +15,9 @@ import mindustry.maps.Map;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 
 import static arc.util.io.Streams.emptyBytes;
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;

@@ -1,6 +1,5 @@
-package Core.Resources.components;
+package cbot.components;
 
-import Core.Resources.Vars;
 import arc.files.ZipFi;
 import arc.graphics.Pixmap;
 import arc.graphics.Texture;
@@ -9,6 +8,7 @@ import arc.graphics.g2d.TextureAtlas.TextureAtlasData;
 import arc.graphics.g2d.TextureAtlas.TextureAtlasData.AtlasPage;
 import arc.struct.ObjectMap;
 import arc.util.*;
+import cbot.Vars;
 import mindustry.core.*;
 import mindustry.world.Tile;
 

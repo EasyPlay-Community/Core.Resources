@@ -1,8 +1,8 @@
-package Core.Resources.components;
+package cbot.components;
 
-import Core.Resources.Vars;
 import arc.util.Log;
 import arc.util.serialization.JsonWriter;
+import cbot.Vars;
 
 public class ConfigUtils {
 

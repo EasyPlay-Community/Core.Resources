@@ -1,8 +1,8 @@
-package Core.Resources.components;
+package cbot.components;
 
-import Core.Resources.Vars;
 import arc.graphics.g2d.TextureAtlas.AtlasRegion;
 import arc.graphics.g2d.TextureAtlas.TextureAtlasData.Region;
+import cbot.Vars;
 
 import java.awt.image.BufferedImage;
 
