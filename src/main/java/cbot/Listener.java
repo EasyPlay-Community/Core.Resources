@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.io.File;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -164,16 +165,25 @@ public class Listener extends ListenerAdapter {
         for (Message.Attachment attachment : message.getAttachments()) {
 
             executor.submit(() -> {
-                if (attachment.getFileName().endsWith(".msch")) {
-                    schemParser(message, attachment);
-                } else if (attachment.getFileName().endsWith(".msav")) {
-                    mapParser(message, attachment);
-                } else if (attachment.getFileName().endsWith(".zip")) {
-                    modParser(message, attachment);
-                } else {
-                    artParser(message, attachment);
-                }
 
+                if (attachment.getFileExtension() == null || !(
+                        Objects.equals(attachment.getFileExtension(), "msch") ||
+                        Objects.equals(attachment.getFileExtension(), "msav") ||
+                        Objects.equals(attachment.getFileExtension(), "zip") ||
+                        Objects.equals(attachment.getFileExtension(), "jpg") ||
+                        Objects.equals(attachment.getFileExtension(), "jpeg") ||
+                        Objects.equals(attachment.getFileExtension(), "png") ||
+                        Objects.equals(attachment.getFileExtension(), "mp4"))) {
+                    reply(message, ":warning: Ошибка!", "Тип файла не определен.\n Для корректной работы файл должен иметь тип:\n `msch`, `msav`, `jpeg`, `jpg`, `png` или `zip`", scarlet);
+                    return;
+                }
+                switch (attachment.getFileExtension()) {
+                    case "msch" -> schemParser(message, attachment);
+                    case "msav" -> mapParser(message, attachment);
+                    case "zip" -> modParser(message, attachment);
+                    case "gif", "jpg" , "jpeg" , "png", "mp4" -> artParser(message, attachment);
+
+                }
             });
             try {
                 Thread.sleep(500);
