@@ -165,23 +165,27 @@ public class Listener extends ListenerAdapter {
 
             executor.submit(() -> {
 
-                if (attachment.getFileExtension() == null || !(
-                        Objects.equals(attachment.getFileExtension(), "msch") ||
-                        Objects.equals(attachment.getFileExtension(), "msav") ||
-                        Objects.equals(attachment.getFileExtension(), "zip") ||
-                        Objects.equals(attachment.getFileExtension(), "jpg") ||
-                        Objects.equals(attachment.getFileExtension(), "jpeg") ||
-                        Objects.equals(attachment.getFileExtension(), "png") ||
-                        Objects.equals(attachment.getFileExtension(), "mp4") ||
-                        Objects.equals(attachment.getFileExtension(), "mov"))) {
-                    reply(message, ":warning: Ошибка!", "Тип файла не определен.\n Для корректной работы файл должен иметь тип:\n `msch`, `msav`, `jpeg`, `jpg`, `png` или `zip`", scarlet);
-                    return;
-                }
                 switch (attachment.getFileExtension()) {
-                    case "msch" -> schemParser(message, attachment);
-                    case "msav" -> mapParser(message, attachment);
-                    case "zip" -> modParser(message, attachment);
-                    case "gif", "jpg" , "jpeg" , "png", "mp4", "mov" -> artParser(message, attachment);
+                    case "msch" -> {
+                        schemParser(message, attachment);
+                        break;
+                    }
+                    case "msav" -> {
+                        mapParser(message, attachment);
+                        break;
+                    }
+                    case "zip" -> {
+                        modParser(message, attachment);
+                        break;
+                    }
+                    case "gif", "jpg" , "jpeg" , "png", "mp4", "mov" -> {
+                        artParser(message, attachment);
+                        break;
+                    }
+                    default -> {
+                        reply(message, ":warning: Ошибка!", "Тип файла не определен.\n Для корректной работы файл должен иметь тип:\n `msch`, `msav`, `jpeg`, `jpg`, `png` или `zip`", scarlet);
+                        return;
+                    }
 
                 }
             });
