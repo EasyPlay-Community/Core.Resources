@@ -110,14 +110,13 @@ public class Listener extends ListenerAdapter {
     public static void modParser(Message message, Message.Attachment attachment) {
         Log.info(attachment.getFileName());
         attachment.getProxy().downloadToFile(Vars.cache.child(attachment.getFileName()).file()).thenAccept(file -> tryWorkWithFile(file, () -> {
-            String footer = message.getContentRaw().substring(5);
             var channel = Vars.jda.getTextChannelById(config.modsChannelId);
 
 
             var embed = new EmbedBuilder()
                     .setTitle(attachment.getFileName().replace(".zip", ""))
                     .setAuthor(message.getMember().getEffectiveName(), attachment.getUrl(), message.getMember().getEffectiveAvatarUrl())
-                    .setFooter(footer)
+                    .setFooter(message.getContentRaw())
                     .setColor(java.awt.Color.decode("#00FF00"))
                     .setImage("attachment://image.png");
             channel.sendMessageEmbeds(embed.build()).addFiles(fromData(attachment.getProxy().download().get(), attachment.getFileName())).queue(queue -> reply(message, ":wrench: Успешно", "Мод отправлен в " + channel.getAsMention(), accent));
