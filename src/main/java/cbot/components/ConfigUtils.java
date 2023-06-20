@@ -24,10 +24,11 @@ public class ConfigUtils {
     public static class Config {
         public String token = "token";
         public String prefix = "!";
-        public long schematicsChannelId = 0L;
-        public long mapsChannelId = 0L;
-        public long modsChannelId = 0L;
-        public long artsChannelId = 0L;
+        public long schematicsForumId = 0L;
+        public long mapsForumId = 0L;
+        public long modsForumId = 0L;
+        public long artsForumId = 0L;
         public long botChannelId = 0L;
+        public long mindustryCategory = 0L;
     }
 }

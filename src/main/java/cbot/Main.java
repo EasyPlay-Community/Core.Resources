@@ -1,9 +1,13 @@
 package cbot;
 
+import arc.files.Fi;
 import arc.util.Log;
 import cbot.components.ConfigUtils;
 import cbot.components.ResourceUtils;
 import net.dv8tion.jda.api.JDABuilder;
+
+import java.io.File;
+import java.util.Objects;
 
 import static cbot.Vars.config;
 import static net.dv8tion.jda.api.requests.GatewayIntent.GUILD_MEMBERS;
@@ -13,6 +17,7 @@ import static net.dv8tion.jda.api.requests.RestAction.setDefaultFailure;
 public class Main {
 
     public static void main(String[] args) {
+
         Vars.cache.delete();
 
         Vars.dataDirectory.mkdirs();
@@ -40,5 +45,6 @@ public class Main {
         }
 
         Listener.loadCommands(config.prefix);
+
     }
 }
